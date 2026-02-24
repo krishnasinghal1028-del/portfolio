@@ -1,0 +1,1537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Krishna Singhal — Quantitative Research</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+  :root {
+    --bg-primary: #0a0e17;
+    --bg-secondary: #0f1520;
+    --bg-card: #111827;
+    --bg-card-hover: #162032;
+    --border: #1c2637;
+    --border-accent: #2a3f5f;
+    --text-primary: #e8ecf4;
+    --text-secondary: #8892a4;
+    --text-muted: #5a6578;
+    --accent-green: #00d26a;
+    --accent-green-dim: #00d26a22;
+    --accent-red: #ff4757;
+    --accent-red-dim: #ff475722;
+    --accent-blue: #3b82f6;
+    --accent-blue-dim: #3b82f622;
+    --accent-amber: #f59e0b;
+    --accent-amber-dim: #f59e0b22;
+    --accent-cyan: #06b6d4;
+    --accent-cyan-dim: #06b6d422;
+    --accent-purple: #a855f7;
+    --accent-purple-dim: #a855f722;
+    --terminal-green: #00ff88;
+    --orange: #ff6b35;
+    --orange-dim: #ff6b3522;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: 'Inter', -apple-system, sans-serif;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* ========== BLOOMBERG TOP BAR ========== */
+  .top-bar {
+    background: #000;
+    border-bottom: 1px solid #141e30;
+    padding: 0 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    height: 38px;
+  }
+
+  .top-bar-left { display: flex; gap: 28px; align-items: center; }
+
+  .top-bar .ticker {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.5px;
+  }
+  .top-bar .ticker .value { color: var(--accent-green); font-weight: 600; }
+  .top-bar .ticker .neg { color: var(--accent-red); }
+
+  .top-bar-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--accent-amber);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  /* Animated scanline */
+  .scanline {
+    position: fixed; top: 38px; left: 0; right: 0; height: 1px; z-index: 999;
+    background: linear-gradient(90deg, transparent 0%, var(--accent-green) 50%, transparent 100%);
+    background-size: 200% 100%;
+    animation: scanMove 3s linear infinite;
+    opacity: 0.5;
+  }
+  @keyframes scanMove {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  /* ========== CONTAINER ========== */
+  .container { max-width: 1400px; margin: 0 auto; padding: 60px 40px 40px; }
+
+  /* ========== HERO ========== */
+  .hero {
+    padding: 80px 0 60px;
+    text-align: center;
+    position: relative;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; top: -40px; left: 50%; transform: translateX(-50%);
+    width: 800px; height: 600px;
+    background: radial-gradient(ellipse at center, #1a2744 0%, transparent 70%);
+    pointer-events: none; z-index: 0;
+  }
+
+  .hero-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px; letter-spacing: 4px; text-transform: uppercase;
+    color: var(--accent-green); margin-bottom: 20px;
+    position: relative; z-index: 1;
+    animation: fadeInDown 0.8s ease;
+  }
+  @keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-15px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .hero h1 {
+    font-size: 56px; font-weight: 900; letter-spacing: -2px;
+    margin-bottom: 16px;
+    background: linear-gradient(135deg, #ffffff 0%, #a0aec0 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    position: relative; z-index: 1;
+    animation: fadeInUp 0.8s ease 0.1s both;
+  }
+
+  .hero-subtitle {
+    font-size: 17px; color: var(--text-secondary); font-weight: 400;
+    margin-bottom: 40px; position: relative; z-index: 1;
+    max-width: 800px; margin-left: auto; margin-right: auto;
+    animation: fadeInUp 0.8s ease 0.2s both;
+    line-height: 1.8;
+  }
+  .hero-subtitle span { color: var(--accent-amber); font-weight: 600; }
+
+  /* ========== STAT STRIP ========== */
+  .stat-strip {
+    display: grid; grid-template-columns: repeat(6, 1fr);
+    gap: 1px; background: var(--border);
+    border: 1px solid var(--border); border-radius: 8px;
+    overflow: hidden; margin-bottom: 64px;
+    animation: fadeInUp 0.8s ease 0.3s both;
+  }
+  .stat-strip .stat {
+    background: var(--bg-card); padding: 22px 16px;
+    text-align: center; transition: all 0.3s ease;
+    position: relative; overflow: hidden;
+  }
+  .stat-strip .stat::after {
+    content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
+    background: var(--accent-green); transform: scaleX(0);
+    transition: transform 0.4s ease;
+  }
+  .stat-strip .stat:hover { background: var(--bg-card-hover); }
+  .stat-strip .stat:hover::after { transform: scaleX(1); }
+
+  .stat .stat-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 26px; font-weight: 700; color: var(--accent-green);
+    line-height: 1; margin-bottom: 6px;
+  }
+  .stat .stat-value.blue { color: var(--accent-blue); }
+  .stat .stat-value.amber { color: var(--accent-amber); }
+  .stat .stat-value.cyan { color: var(--accent-cyan); }
+  .stat .stat-value.purple { color: var(--accent-purple); }
+  .stat .stat-value.orange { color: var(--orange); }
+
+  .stat .stat-label {
+    font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase;
+    color: var(--text-muted); font-weight: 500;
+  }
+
+  /* ========== SECTIONS ========== */
+  .section { margin-bottom: 64px; }
+
+  .section-header {
+    display: flex; align-items: center; gap: 16px;
+    margin-bottom: 28px; padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-number {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px; color: var(--accent-green);
+    background: var(--accent-green-dim); padding: 4px 10px;
+    border-radius: 4px; font-weight: 600;
+  }
+  .section-title { font-size: 22px; font-weight: 700; letter-spacing: -0.3px; }
+  .section-tag {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    color: var(--text-muted); letter-spacing: 2px; text-transform: uppercase;
+    margin-left: auto;
+  }
+
+  /* ========== ARCH CARDS ========== */
+  .arch-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+  .arch-card {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 8px; padding: 28px; position: relative; overflow: hidden;
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .arch-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    transition: height 0.3s ease;
+  }
+  .arch-card:hover {
+    border-color: var(--border-accent); background: var(--bg-card-hover);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+  }
+  .arch-card:hover::before { height: 3px; }
+
+  .arch-card.green::before { background: var(--accent-green); }
+  .arch-card.blue::before { background: var(--accent-blue); }
+  .arch-card.amber::before { background: var(--accent-amber); }
+  .arch-card.cyan::before { background: var(--accent-cyan); }
+  .arch-card.purple::before { background: var(--accent-purple); }
+  .arch-card.red::before { background: var(--accent-red); }
+  .arch-card.orange::before { background: var(--orange); }
+  .arch-card.full-width { grid-column: 1 / -1; }
+
+  .arch-card-header {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    margin-bottom: 16px;
+  }
+  .arch-card h3 { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+  .arch-card .tech-badge {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    color: var(--text-muted); background: var(--bg-primary);
+    padding: 3px 8px; border-radius: 3px; border: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  .arch-card .description {
+    color: var(--text-secondary); font-size: 13px; line-height: 1.7;
+    margin-bottom: 16px;
+  }
+  .arch-card .metrics { display: flex; gap: 12px; flex-wrap: wrap; }
+  .arch-card .metric {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    padding: 4px 10px; border-radius: 4px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .metric.green { background: var(--accent-green-dim); color: var(--accent-green); }
+  .metric.blue { background: var(--accent-blue-dim); color: var(--accent-blue); }
+  .metric.amber { background: var(--accent-amber-dim); color: var(--accent-amber); }
+  .metric.red { background: var(--accent-red-dim); color: var(--accent-red); }
+  .metric.cyan { background: var(--accent-cyan-dim); color: var(--accent-cyan); }
+  .metric.purple { background: var(--accent-purple-dim); color: var(--accent-purple); }
+  .metric.orange { background: var(--orange-dim); color: var(--orange); }
+
+  /* ========== PIPELINE ========== */
+  .pipeline {
+    display: flex; align-items: stretch; gap: 0;
+    margin: 20px 0; overflow-x: auto; padding-bottom: 8px;
+  }
+  .pipeline-stage {
+    flex: 1; min-width: 140px;
+    background: var(--bg-primary); border: 1px solid var(--border);
+    padding: 16px 12px; text-align: center; position: relative;
+    transition: all 0.3s ease;
+  }
+  .pipeline-stage:first-child { border-radius: 8px 0 0 8px; }
+  .pipeline-stage:last-child { border-radius: 0 8px 8px 0; }
+  .pipeline-stage:hover {
+    background: var(--bg-card-hover); border-color: var(--accent-green); z-index: 1;
+    box-shadow: 0 0 15px var(--accent-green-dim);
+  }
+  .pipeline-stage::after {
+    content: ''; position: absolute; right: -1px; top: 50%; transform: translateY(-50%);
+    width: 0; height: 0;
+    border-top: 8px solid transparent; border-bottom: 8px solid transparent;
+    border-left: 8px solid var(--accent-green);
+    z-index: 2; opacity: 0.6;
+  }
+  .pipeline-stage:last-child::after { display: none; }
+  .pipeline-stage .stage-num {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    color: var(--accent-green); margin-bottom: 6px; letter-spacing: 1px;
+  }
+  .pipeline-stage .stage-name {
+    font-size: 11px; font-weight: 600; color: var(--text-primary); line-height: 1.3;
+  }
+  .pipeline-stage .stage-detail {
+    font-size: 10px; color: var(--text-muted); margin-top: 4px;
+  }
+
+  /* ========== BLOOMBERG TABLE ========== */
+  .bb-table {
+    width: 100%; border-collapse: collapse;
+    font-family: 'JetBrains Mono', monospace; font-size: 12px; margin: 20px 0;
+  }
+  .bb-table thead th {
+    background: #080c14; color: var(--accent-amber);
+    font-size: 10px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase;
+    padding: 12px 14px; text-align: right;
+    border-bottom: 2px solid var(--accent-amber);
+    white-space: nowrap; position: sticky; top: 38px;
+  }
+  .bb-table thead th:first-child { text-align: left; }
+  .bb-table thead th:nth-child(2) { text-align: left; }
+
+  .bb-table tbody td {
+    padding: 11px 14px; border-bottom: 1px solid #141e2e;
+    text-align: right; color: var(--text-primary);
+    transition: background 0.2s;
+  }
+  .bb-table tbody td:first-child { text-align: left; font-weight: 600; }
+  .bb-table tbody td:nth-child(2) { text-align: left; }
+  .bb-table tbody tr:hover td { background: #0f1a2e; }
+
+  .bb-table .positive { color: var(--accent-green); }
+  .bb-table .negative { color: var(--accent-red); }
+  .bb-table .highlight-row td {
+    background: #002a1a; border-bottom-color: var(--accent-green);
+  }
+  .bb-table .highlight-row:hover td { background: #003322; }
+
+  .formula-cell {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; color: var(--accent-cyan);
+    font-style: italic; line-height: 1.5;
+  }
+
+  /* ========== DATA GRID ========== */
+  .data-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .data-card {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 8px; padding: 24px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .data-card:hover {
+    border-color: var(--border-accent); transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+  }
+  .data-card .data-icon { font-size: 20px; margin-bottom: 12px; }
+  .data-card h4 { font-size: 14px; font-weight: 600; margin-bottom: 8px; }
+  .data-card .data-detail {
+    font-size: 12px; color: var(--text-secondary); line-height: 1.6;
+  }
+  .data-card .data-detail strong {
+    color: var(--accent-green); font-family: 'JetBrains Mono', monospace; font-size: 11px;
+  }
+  .data-card .source-tag {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    color: var(--accent-cyan); background: #06b6d411;
+    padding: 3px 8px; border-radius: 3px; display: inline-block; margin-top: 10px;
+  }
+
+  /* ========== WHY SECTION ========== */
+  .why-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .why-panel {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 8px; padding: 32px; position: relative; overflow: hidden;
+  }
+  .why-panel::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  }
+  .why-panel.need::before { background: linear-gradient(90deg, var(--accent-red), var(--accent-amber)); }
+  .why-panel.bring::before { background: linear-gradient(90deg, var(--accent-green), var(--accent-cyan)); }
+
+  .why-panel h3 { font-size: 18px; font-weight: 700; margin-bottom: 20px; }
+
+  .why-panel .why-item {
+    display: flex; align-items: flex-start; gap: 12px;
+    margin-bottom: 14px; padding: 14px;
+    background: var(--bg-primary); border-radius: 6px;
+    border: 1px solid var(--border);
+    transition: all 0.25s ease;
+  }
+  .why-panel .why-item:hover {
+    border-color: var(--border-accent);
+    transform: translateX(4px);
+  }
+  .why-item .why-icon { font-size: 14px; flex-shrink: 0; margin-top: 2px; }
+  .why-item .why-text {
+    font-size: 13px; color: var(--text-secondary); line-height: 1.7;
+  }
+  .why-item .why-text strong { color: var(--text-primary); font-weight: 600; }
+
+  /* ========== ELEPHANT SECTION ========== */
+  .elephant-section {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 8px; padding: 40px; position: relative; overflow: hidden;
+  }
+  .elephant-section::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, var(--accent-amber), var(--accent-green));
+  }
+  .elephant-q {
+    font-size: 20px; font-weight: 700; color: var(--accent-amber);
+    margin-bottom: 8px; font-style: italic;
+  }
+  .elephant-context {
+    font-size: 13px; color: var(--text-muted); margin-bottom: 24px; font-style: italic;
+  }
+  .elephant-answers { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .elephant-answer {
+    padding: 20px; background: var(--bg-primary);
+    border: 1px solid var(--border); border-radius: 6px;
+    transition: all 0.3s ease;
+  }
+  .elephant-answer:hover {
+    border-color: var(--border-accent); transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  }
+  .elephant-answer .ea-num {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    color: var(--accent-green); margin-bottom: 8px; letter-spacing: 1px;
+  }
+  .elephant-answer h4 { font-size: 14px; font-weight: 600; margin-bottom: 8px; }
+  .elephant-answer p { font-size: 12px; color: var(--text-secondary); line-height: 1.7; }
+
+  /* ========== TERMINAL ========== */
+  .terminal {
+    background: #08080a; border: 1px solid #1e1e28; border-radius: 8px;
+    overflow: hidden; margin: 20px 0;
+  }
+  .terminal-header {
+    background: #111118; padding: 8px 16px;
+    display: flex; align-items: center; gap: 8px;
+    border-bottom: 1px solid #1e1e28;
+  }
+  .terminal-dot { width: 10px; height: 10px; border-radius: 50%; }
+  .terminal-dot.red { background: #ff5f56; }
+  .terminal-dot.yellow { background: #ffbd2e; }
+  .terminal-dot.green { background: #27c93f; }
+  .terminal-title {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    color: #555; margin-left: 8px;
+  }
+  .terminal-body {
+    padding: 20px; font-family: 'JetBrains Mono', monospace;
+    font-size: 12px; line-height: 1.8; color: #bbb; overflow-x: auto;
+  }
+  .terminal-body .comment { color: #4a5568; }
+  .terminal-body .folder { color: var(--accent-amber); }
+  .terminal-body .file { color: #bbb; }
+
+  /* ========== VALIDATION ========== */
+  .validation-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 12px; margin: 20px 0;
+  }
+  .validation-item {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 6px; padding: 16px; text-align: center;
+    transition: all 0.25s ease;
+  }
+  .validation-item:hover {
+    border-color: var(--accent-green);
+    box-shadow: 0 0 12px var(--accent-green-dim);
+  }
+  .validation-item .vi-name { font-size: 12px; font-weight: 600; margin-bottom: 8px; }
+  .validation-item .vi-tests {
+    font-family: 'JetBrains Mono', monospace; font-size: 18px;
+    color: var(--accent-green); font-weight: 700;
+  }
+  .validation-item .vi-coverage {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    color: var(--text-muted); margin-top: 4px;
+  }
+  .validation-item .vi-status {
+    font-size: 11px; color: var(--accent-green); margin-top: 6px; font-weight: 600;
+    letter-spacing: 1px;
+  }
+
+  /* ========== OPTIONS GRID ========== */
+  .options-grid {
+    display: grid; grid-template-columns: repeat(5, 1fr);
+    gap: 8px; margin: 16px 0;
+  }
+  .option-chip {
+    background: var(--bg-primary); border: 1px solid var(--border);
+    border-radius: 6px; padding: 12px 8px; text-align: center;
+    font-size: 11px; font-weight: 500; color: var(--text-secondary);
+    transition: all 0.25s ease;
+  }
+  .option-chip:hover {
+    border-color: var(--accent-cyan); color: var(--accent-cyan);
+    background: #06b6d408; transform: scale(1.03);
+  }
+
+  /* ========== TIMELINE ========== */
+  .timeline { position: relative; padding-left: 36px; margin: 20px 0; }
+  .timeline::before {
+    content: ''; position: absolute; left: 10px; top: 0; bottom: 0;
+    width: 2px;
+    background: linear-gradient(180deg, var(--accent-green) 0%, var(--border) 100%);
+  }
+  .timeline-item {
+    position: relative; margin-bottom: 18px; padding: 18px 22px;
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 6px; transition: all 0.3s ease;
+  }
+  .timeline-item:hover {
+    border-color: var(--border-accent); transform: translateX(6px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  }
+  .timeline-item::before {
+    content: ''; position: absolute; left: -30px; top: 22px;
+    width: 12px; height: 12px; border-radius: 50%;
+    background: var(--accent-green); border: 3px solid var(--bg-primary);
+    box-shadow: 0 0 8px var(--accent-green-dim);
+  }
+  .timeline-item .tl-date {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    color: var(--accent-green); letter-spacing: 1.5px; margin-bottom: 4px;
+    text-transform: uppercase;
+  }
+  .timeline-item .tl-title {
+    font-size: 15px; font-weight: 700; margin-bottom: 6px;
+  }
+  .timeline-item .tl-desc { font-size: 12px; color: var(--text-secondary); line-height: 1.7; }
+  .timeline-item .tl-highlight {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    color: var(--accent-green); margin-top: 8px;
+    padding: 4px 10px; background: var(--accent-green-dim);
+    border-radius: 4px; display: inline-block;
+  }
+  .timeline-item .tl-loss {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    color: var(--accent-red); margin-top: 8px;
+    padding: 4px 10px; background: var(--accent-red-dim);
+    border-radius: 4px; display: inline-block;
+  }
+
+  /* ========== HONEST NOTE ========== */
+  .honest-note {
+    background: linear-gradient(135deg, #1a1205 0%, #0f1520 100%);
+    border: 1px solid #3d2e0a; border-left: 3px solid var(--accent-amber);
+    border-radius: 6px; padding: 20px 24px; margin: 20px 0;
+    font-size: 13px; color: var(--text-secondary); line-height: 1.8;
+  }
+  .honest-note strong { color: var(--accent-amber); }
+
+  /* ========== TRAIT CARDS ========== */
+  .trait-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;
+    margin: 20px 0;
+  }
+  .trait-card {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 8px; padding: 24px; position: relative; overflow: hidden;
+    transition: all 0.3s ease;
+  }
+  .trait-card:hover {
+    border-color: var(--border-accent); transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+  }
+  .trait-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: var(--accent-amber);
+  }
+  .trait-card h4 {
+    font-size: 14px; font-weight: 700; margin-bottom: 10px;
+    color: var(--accent-amber);
+  }
+  .trait-card p {
+    font-size: 12px; color: var(--text-secondary); line-height: 1.7;
+  }
+  .trait-card .trait-example {
+    margin-top: 10px; padding: 8px 12px;
+    background: var(--bg-primary); border-radius: 4px;
+    border: 1px solid var(--border);
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    color: var(--accent-cyan); line-height: 1.6;
+  }
+
+  /* ========== FOOTER ========== */
+  .footer {
+    text-align: center; padding: 40px 0;
+    border-top: 1px solid var(--border); margin-top: 60px;
+  }
+  .footer-text {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    color: var(--text-muted); letter-spacing: 1px;
+  }
+  .footer-text a { color: var(--accent-blue); text-decoration: none; }
+
+  /* Blinking cursor */
+  .cursor {
+    display: inline-block; width: 8px; height: 18px;
+    background: var(--accent-green); animation: blink 1s infinite;
+    vertical-align: text-bottom; margin-left: 2px;
+  }
+  @keyframes blink { 0%, 50% { opacity: 1; } 51%, 100% { opacity: 0; } }
+
+  /* ========== ANIMATIONS ========== */
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .section { animation: fadeInUp 0.6s ease forwards; }
+
+  /* Animate sections on scroll */
+  .section[data-animate] {
+    opacity: 0; transform: translateY(30px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .section[data-animate].visible { opacity: 1; transform: translateY(0); }
+
+  /* ========== RESPONSIVE ========== */
+  @media (max-width: 1024px) {
+    .arch-grid, .why-grid, .elephant-answers { grid-template-columns: 1fr; }
+    .stat-strip { grid-template-columns: repeat(3, 1fr); }
+    .data-grid { grid-template-columns: 1fr 1fr; }
+    .trait-grid { grid-template-columns: 1fr 1fr; }
+    .options-grid { grid-template-columns: repeat(3, 1fr); }
+    .hero h1 { font-size: 38px; }
+    .gallery-grid { grid-template-columns: repeat(3, 1fr); }
+    .gallery-item:nth-child(1),
+    .gallery-item:nth-child(6) { grid-column: span 1; grid-row: span 1; }
+  }
+  @media (max-width: 768px) {
+    .container { padding: 60px 20px 20px; }
+    .stat-strip { grid-template-columns: 1fr 1fr; }
+    .data-grid, .trait-grid { grid-template-columns: 1fr; }
+    .gallery-grid { grid-template-columns: 1fr 1fr; }
+    .validation-grid { grid-template-columns: 1fr 1fr; }
+    .pipeline { flex-direction: column; }
+    .pipeline-stage { min-width: 100%; }
+    .pipeline-stage::after { display: none; }
+  }
+
+  /* ========== RESEARCH GALLERY ========== */
+  .gallery-grid {
+    display: grid; grid-template-columns: repeat(5, 1fr);
+    gap: 10px; margin: 20px 0;
+  }
+  .gallery-item {
+    position: relative; border-radius: 8px; overflow: hidden;
+    border: 1px solid var(--border); cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    aspect-ratio: 4/3;
+  }
+  .gallery-item:nth-child(1),
+  .gallery-item:nth-child(6) { grid-column: span 2; grid-row: span 2; aspect-ratio: auto; }
+  .gallery-item img {
+    width: 100%; height: 100%; object-fit: cover;
+    transition: transform 0.5s ease, filter 0.3s ease;
+    filter: brightness(0.7) saturate(1.2);
+  }
+  .gallery-item:hover img { transform: scale(1.08); filter: brightness(1) saturate(1.3); }
+  .gallery-item:hover {
+    border-color: var(--accent-green);
+    box-shadow: 0 8px 30px rgba(0,210,106,0.15);
+    z-index: 2;
+  }
+  .gallery-item .gallery-label {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    padding: 8px 12px;
+    background: linear-gradient(transparent, rgba(0,0,0,0.85));
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    color: var(--accent-green); letter-spacing: 1px;
+    text-transform: uppercase;
+    transform: translateY(100%);
+    transition: transform 0.3s ease;
+  }
+  .gallery-item:hover .gallery-label { transform: translateY(0); }
+
+  /* Lightbox */
+  .lightbox {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.92); z-index: 2000;
+    display: none; align-items: center; justify-content: center;
+    cursor: pointer; backdrop-filter: blur(10px);
+    animation: lbFadeIn 0.25s ease;
+  }
+  .lightbox.active { display: flex; }
+  .lightbox img {
+    max-width: 90vw; max-height: 85vh; border-radius: 8px;
+    border: 1px solid var(--border-accent);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  }
+  .lightbox .lb-caption {
+    position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
+    font-family: 'JetBrains Mono', monospace; font-size: 12px;
+    color: var(--accent-green); letter-spacing: 2px; text-transform: uppercase;
+    background: rgba(0,0,0,0.7); padding: 8px 20px; border-radius: 4px;
+  }
+  .lightbox .lb-close {
+    position: absolute; top: 20px; right: 30px;
+    font-size: 28px; color: var(--text-muted); cursor: pointer;
+    transition: color 0.2s;
+  }
+  .lightbox .lb-close:hover { color: var(--accent-red); }
+  @keyframes lbFadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg-primary); }
+  ::-webkit-scrollbar-thumb { background: var(--border-accent); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+</style>
+</head>
+<body>
+
+<!-- ========== BLOOMBERG TOP BAR ========== -->
+<div class="top-bar">
+  <div class="top-bar-left">
+    <span class="ticker">SHARPE <span class="value">1.94</span></span>
+    <span class="ticker">CAGR <span class="value">43.7%</span></span>
+    <span class="ticker">MAX DD <span class="neg">11.3%</span></span>
+    <span class="ticker">STRATEGIES <span class="value">14+</span></span>
+    <span class="ticker">TESTS <span class="value">653 PASS</span></span>
+    <span class="ticker">DATA <span class="value">22 GB</span></span>
+  </div>
+  <span class="top-bar-title">Krishna Singhal &mdash; Quant Research Terminal</span>
+</div>
+<div class="scanline"></div>
+
+<div class="container">
+
+  <!-- ========== HERO ========== -->
+  <div class="hero">
+    <div class="hero-label">/// Quantitative Research &amp; Algorithmic Trading</div>
+    <h1>Krishna Singhal</h1>
+    <p class="hero-subtitle">
+      Finance student who taught himself to code. Built <span>14+ trading strategies</span>,
+      <span>118,000+ lines</span> of Python, and <span>11 years of 1-minute data infrastructure</span> from scratch.
+      From a <span>500% return</span> on a BankNifty options algo to a multi-strategy ensemble
+      with <span>Sharpe 1.94</span> — here's everything I've built and why I need a team to take it live.
+    </p>
+  </div>
+
+  <!-- ========== STAT STRIP ========== -->
+  <div class="stat-strip">
+    <div class="stat">
+      <div class="stat-value">1.94</div>
+      <div class="stat-label">Sharpe Ratio</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value">43.7%</div>
+      <div class="stat-label">Ensemble CAGR</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value blue">11.3%</div>
+      <div class="stat-label">Max Drawdown</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value amber">118K+</div>
+      <div class="stat-label">Lines of Code</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value cyan">362</div>
+      <div class="stat-label">Python Modules</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value orange">500%</div>
+      <div class="stat-label">BankNifty Algo (3mo)</div>
+    </div>
+  </div>
+
+  <!-- ============================================================= -->
+  <!-- SECTION 1: WHAT I BUILT -->
+  <!-- ============================================================= -->
+  <div class="section" data-animate>
+    <div class="section-header">
+      <span class="section-number">01</span>
+      <span class="section-title">What I Built — From Zero</span>
+      <span class="section-tag">Systems &amp; Strategies</span>
+    </div>
+
+    <!-- Hedge Fund Algo Pipeline -->
+    <div class="arch-card full-width green" style="margin-bottom: 20px;">
+      <div class="arch-card-header">
+        <div>
+          <h3>Multi-Strategy Quantitative Trading Engine</h3>
+          <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">
+            7-stage modular pipeline &middot; 31 source files &middot; 4,030 lines &middot; 13 sub-packages
+          </p>
+        </div>
+        <span class="tech-badge">Python &middot; Pandas &middot; NumPy &middot; SciPy &middot; Scikit-Learn &middot; Statsmodels</span>
+      </div>
+
+      <div class="pipeline">
+        <div class="pipeline-stage">
+          <div class="stage-num">STAGE 1</div>
+          <div class="stage-name">Data Ingestion</div>
+          <div class="stage-detail">4,000+ parquet files</div>
+        </div>
+        <div class="pipeline-stage">
+          <div class="stage-num">STAGE 2</div>
+          <div class="stage-name">Feature Engineering</div>
+          <div class="stage-detail">Advanced + Regime</div>
+        </div>
+        <div class="pipeline-stage">
+          <div class="stage-num">STAGE 3</div>
+          <div class="stage-name">Regime Detection</div>
+          <div class="stage-detail">Market state classifier</div>
+        </div>
+        <div class="pipeline-stage">
+          <div class="stage-num">STAGE 4</div>
+          <div class="stage-name">Deep Feature Fusion</div>
+          <div class="stage-detail">Walk-forward backtest</div>
+        </div>
+        <div class="pipeline-stage">
+          <div class="stage-num">STAGE 5</div>
+          <div class="stage-name">Portfolio Construction</div>
+          <div class="stage-detail">Position sizing</div>
+        </div>
+        <div class="pipeline-stage">
+          <div class="stage-num">STAGE 6</div>
+          <div class="stage-name">Alpha Attribution</div>
+          <div class="stage-detail">Source decomposition</div>
+        </div>
+        <div class="pipeline-stage">
+          <div class="stage-num">STAGE 7</div>
+          <div class="stage-name">Execution Sim</div>
+          <div class="stage-detail">Order generation</div>
+        </div>
+      </div>
+
+      <div class="description">
+        Built a math/physics layer using <strong>Stochastic Differential Equations, Information Theory (Transfer Entropy), Statistical Mechanics, and Network Analysis</strong> for cross-asset alpha generation. The ensemble dynamically weights 3 uncorrelated sub-strategies using rolling Sharpe with softmax allocation — minimum 10%, maximum 60% per strategy.
+      </div>
+
+      <div class="metrics">
+        <span class="metric green">Ensemble Sharpe: 1.94</span>
+        <span class="metric green">CAGR: 43.7%</span>
+        <span class="metric blue">Max DD: 11.3%</span>
+        <span class="metric amber">653 Unit Tests &middot; 74-93% Coverage</span>
+      </div>
+    </div>
+
+    <!-- Strategy Results Table with formulas -->
+    <div class="arch-grid">
+      <div class="arch-card full-width blue">
+        <h3 style="margin-bottom: 4px;">Strategy Performance — 5 Years on NSE Data (2020&ndash;2024)</h3>
+        <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 8px;">Each strategy uses a distinct mathematical edge — no indicator overlaps</p>
+        <table class="bb-table">
+          <thead>
+            <tr>
+              <th>Strategy</th>
+              <th>Core Logic / Formula</th>
+              <th>Return</th>
+              <th>CAGR</th>
+              <th>Sharpe</th>
+              <th>Max DD</th>
+              <th>Trades</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Pairs Trading</td>
+              <td class="formula-cell">Johansen cointegration test &rarr; Z-score of spread &rarr; mean-revert when |Z| &gt; 2&sigma; on 60-day rolling window</td>
+              <td class="positive">674.2%</td>
+              <td class="positive">54.6%</td>
+              <td>1.15</td>
+              <td class="negative">50.5%</td>
+              <td>34</td>
+            </tr>
+            <tr>
+              <td>Diffusion Momentum</td>
+              <td class="formula-cell">Estimate drift (&mu;) and vol (&sigma;) via SDE &rarr; rank by &mu;/&sigma; score &rarr; hold top-5 equal-weight, rebal every 20 days</td>
+              <td class="positive">525.8%</td>
+              <td class="positive">47.7%</td>
+              <td class="positive">1.92</td>
+              <td class="negative">29.2%</td>
+              <td>60</td>
+            </tr>
+            <tr>
+              <td>Transfer Entropy Network</td>
+              <td class="formula-cell">Compute TE(IT&rarr;Banking) for information flow &rarr; trade followers when leaders move &gt;2% threshold</td>
+              <td>19.1%</td>
+              <td>3.7%</td>
+              <td>0.55</td>
+              <td>7.0%</td>
+              <td>222</td>
+            </tr>
+            <tr class="highlight-row">
+              <td>Dynamic Ensemble &#9733;</td>
+              <td class="formula-cell">w<sub>i</sub> = softmax(Sharpe<sub>i,60d</sub> / T) &rarr; min 10%, max 60% per strategy &rarr; daily rebalance</td>
+              <td class="positive">449.0%</td>
+              <td class="positive">43.7%</td>
+              <td class="positive">1.94</td>
+              <td>11.3%</td>
+              <td>1,183</td>
+            </tr>
+            <tr>
+              <td>Multibagger ML Ranker</td>
+              <td class="formula-cell">XGBoost + LSTM ensemble on fundamental + technical features &rarr; rank 500+ NSE stocks &rarr; top quintile portfolio</td>
+              <td class="positive" style="color: var(--accent-amber);">~59% CAGR*</td>
+              <td class="positive" style="color: var(--accent-amber);">~59%*</td>
+              <td style="color: var(--text-muted);">—</td>
+              <td style="color: var(--text-muted);">—</td>
+              <td style="color: var(--text-muted);">—</td>
+            </tr>
+          </tbody>
+        </table>
+        <p style="font-size: 10px; color: var(--text-muted); margin-top: 4px;">* Multibagger ML results from previous system (switched machines). Full backtest data not on this computer.</p>
+
+        <div class="honest-note">
+          <strong>Honest note:</strong> These are backtested results, not live P&L. I know backtests can be misleading — that's exactly why I want to work with a team that has the infrastructure to validate edges in live markets with proper execution, slippage modeling, and risk controls that I cannot replicate alone.
+        </div>
+      </div>
+
+      <!-- Options Selling -->
+      <div class="arch-card amber">
+        <div class="arch-card-header">
+          <div>
+            <h3>Options Selling &amp; IV-Adaptive Framework</h3>
+            <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">3,643 lines &middot; 14 modules</p>
+          </div>
+          <span class="tech-badge">Black-Scholes &middot; Greeks &middot; IV</span>
+        </div>
+        <div class="description">
+          Complete backtesting engine for <strong>10 options strategies</strong> with configurable Greeks and expiry parameters. Custom IV engine using Black-Scholes pricing, margin calculator, execution simulator, and portfolio-level P&L aggregator with slippage + transaction cost modelling.
+        </div>
+        <div class="options-grid">
+          <div class="option-chip">Short Straddle</div>
+          <div class="option-chip">Short Strangle</div>
+          <div class="option-chip">Iron Condor</div>
+          <div class="option-chip">Jade Lizard</div>
+          <div class="option-chip">IV-Adaptive</div>
+          <div class="option-chip">Ratio Spread</div>
+          <div class="option-chip">Long Straddle</div>
+          <div class="option-chip">Long Strangle</div>
+          <div class="option-chip">Straddle/Strangle</div>
+          <div class="option-chip">Custom Greeks</div>
+        </div>
+      </div>
+
+      <!-- Live Paper Trading -->
+      <div class="arch-card cyan">
+        <div class="arch-card-header">
+          <div>
+            <h3>Live Paper Trading System</h3>
+            <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">6,252 lines &middot; Deployed on personal server</p>
+          </div>
+          <span class="tech-badge">Zerodha Kite API &middot; SQLite &middot; Telegram</span>
+        </div>
+        <div class="description">
+          End-to-end live paper-trading bot with real-time signal generation, automated order management, and <strong>Telegram alerting</strong>. Includes orchestrator, live data pipeline, database logger, multi-strategy runner, and dashboard for breakout and pairs trading strategies.
+        </div>
+        <div class="metrics">
+          <span class="metric green">Real-time signals</span>
+          <span class="metric blue">Auto order management</span>
+          <span class="metric amber">Telegram alerts</span>
+        </div>
+      </div>
+
+      <!-- ML Multibagger -->
+      <div class="arch-card purple">
+        <div class="arch-card-header">
+          <div>
+            <h3>ML Multibagger Stock Ranker</h3>
+            <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">500+ NSE equities &middot; ~59% CAGR on previous system</p>
+          </div>
+          <span class="tech-badge">XGBoost &middot; LSTM &middot; Feature Eng.</span>
+        </div>
+        <div class="description">
+          ML pipeline that combines <strong>fundamental data (revenue growth, ROE, debt ratios, promoter holding)</strong> with <strong>technical features (momentum, vol, RSI, breakout patterns)</strong> to rank 500+ NSE stocks. Trained multiple models (XGBoost, Random Forest, LSTM), ensembled predictions, and validated with paper trading. Achieved approximately 59% CAGR on backtest (results on previous machine — switched systems).
+        </div>
+        <div class="metrics">
+          <span class="metric green">500+ stocks screened</span>
+          <span class="metric purple">Fundamental + Technical</span>
+          <span class="metric amber">~59% CAGR backtest</span>
+        </div>
+      </div>
+
+      <!-- Mean Reversion / Active Trading -->
+      <div class="arch-card orange">
+        <div class="arch-card-header">
+          <div>
+            <h3>Mean Cycle &amp; Stock-Specific Patterns</h3>
+            <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Actively traded strategies</p>
+          </div>
+          <span class="tech-badge">EMA 20/50 &middot; Mean Reversion</span>
+        </div>
+        <div class="description">
+          Developed <strong>stock-specific mean reversion strategies</strong> that I actively trade. Found repeating patterns in individual stocks — for example, <strong>Mahindra consistently bounces off the 50 EMA or 20 EMA on the weekly chart</strong>, creating a high-probability mean-reversion setup. Backtested this across multiple stocks, each with their own "personality" — some revert at 20 EMA, some at 50, some at specific Fibonacci levels. This pattern recognition across individual names is something I've built manually through months of screen time and backtesting.
+        </div>
+        <div class="metrics">
+          <span class="metric orange">Actively Traded</span>
+          <span class="metric green">Stock-specific edge</span>
+          <span class="metric blue">Weekly EMA bounces</span>
+        </div>
+      </div>
+
+      <!-- Additional Research -->
+      <div class="arch-card red">
+        <div class="arch-card-header">
+          <h3>20+ Additional Research Projects</h3>
+        </div>
+        <div class="description" style="margin-bottom: 0;">
+          Macro factor algo (multi-factor signals) &middot; Multi-asset breakout system &middot; Mean reversion cycle testing across 20+ stocks &middot;
+          Opening Range Breakout (ORB) &middot; Physics-based algo (SDEs) &middot; Crude oil RSI research &middot;
+          Crypto multi-timeframe backtesting &middot; BankNifty intraday (hybrid, momentum, ML, price-action) &middot;
+          Regime-based switching &middot; Commodity swing strategies &middot; Volatility surface arbitrage &middot;
+          Multi-year swing trading &middot; EMA-200 backtest research &middot; Nifty position trading &middot;
+          <strong>9 weeks of documented Quant 2026 research milestones</strong>
+        </div>
+      </div>
+
+      <!-- Gaming App -->
+      <div class="arch-card green">
+        <div class="arch-card-header">
+          <div>
+            <h3>Mini Game Hub &mdash; Published Mobile App</h3>
+            <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Built during a break from quant &middot; Published on Google Play Store</p>
+          </div>
+          <span class="tech-badge">Flutter &middot; Dart &middot; Firebase &middot; AdMob</span>
+        </div>
+        <div class="description" style="margin-bottom: 0;">
+          When I needed a mental reset from quant research, I built and published a <strong>cross-platform gaming app with 8 games</strong> (2048, Minesweeper, Snake, Solitaire, Sudoku, etc.) in Flutter/Dart. 30+ files, in-app coin economy, Google AdMob monetization. Released on Play Store. Shows I can ship a product end-to-end &mdash; not just research code, but something users actually download and use.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================= -->
+  <!-- SECTION: RESEARCH GALLERY -->
+  <!-- ============================================================= -->
+  <div class="section" data-animate>
+    <div class="section-header">
+      <span class="section-number">02</span>
+      <span class="section-title">Research Output &mdash; Actual Visualizations from My Code</span>
+      <span class="section-tag">Click to Expand</span>
+    </div>
+
+    <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">
+      Every chart below was generated by my Python code running on real market data. Click any image to view full-size.
+    </p>
+
+    <div class="gallery-grid">
+      <div class="gallery-item" onclick="openLightbox(this)">
+        <img src="charts/volatility_surface_3d.png" alt="Volatility Surface">
+        <div class="gallery-label">3D Volatility Surface &middot; NIFTY Options</div>
+      </div>
+      <div class="gallery-item" onclick="openLightbox(this)">
+        <img src="charts/monte_carlo.png" alt="Monte Carlo">
+        <div class="gallery-label">Monte Carlo Simulation &middot; 1Y Projection</div>
+      </div>
+      <div class="gallery-item" onclick="openLightbox(this)">
+        <img src="charts/transfer_entropy.png" alt="Transfer Entropy">
+        <div class="gallery-label">Transfer Entropy Matrix &middot; IT&rarr;Banking</div>
+      </div>
+      <div class="gallery-item" onclick="openLightbox(this)">
+        <img src="charts/regime_detection.png" alt="Regime Detection">
+        <div class="gallery-label">Regime Detection &middot; NIFTY 1990&ndash;2025</div>
+      </div>
+      <div class="gallery-item" onclick="openLightbox(this)">
+        <img src="charts/returns_distribution.png" alt="Returns Distribution">
+        <div class="gallery-label">Returns Distribution &middot; QQ + Win Rate</div>
+      </div>
+      <div class="gallery-item" onclick="openLightbox(this)">
+        <img src="charts/3d_performance.png" alt="3D Performance">
+        <div class="gallery-label">3D Performance Surfaces &middot; Multi-Year Swing</div>
+      </div>
+      <div class="gallery-item" onclick="openLightbox(this)">
+        <img src="charts/var_analysis.png" alt="VaR Analysis">
+        <div class="gallery-label">Value at Risk (VaR) &middot; 90/95/99% Confidence</div>
+      </div>
+      <div class="gallery-item" onclick="openLightbox(this)">
+        <img src="charts/shap_features.png" alt="SHAP Features">
+        <div class="gallery-label">SHAP Feature Importance &middot; Multibagger ML</div>
+      </div>
+      <div class="gallery-item" onclick="openLightbox(this)">
+        <img src="charts/equity_3d.png" alt="3D Equity">
+        <div class="gallery-label">3D Equity Evolution Surface</div>
+      </div>
+      <div class="gallery-item" onclick="openLightbox(this)">
+        <img src="charts/pnl_heatmap.png" alt="P&L Heatmap">
+        <div class="gallery-label">P&amp;L Heatmap &middot; Day &times; Hour</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================= -->
+  <!-- SECTION 3: DATA INFRASTRUCTURE -->
+  <!-- ============================================================= -->
+  <div class="section" data-animate>
+    <div class="section-header">
+      <span class="section-number">03</span>
+      <span class="section-title">Data Infrastructure — Self-Sourced &amp; Maintained</span>
+      <span class="section-tag">Data Pipeline</span>
+    </div>
+
+    <div class="data-grid">
+      <div class="data-card">
+        <div class="data-icon">&#x1F4CA;</div>
+        <h4>1-Minute Equity Data</h4>
+        <div class="data-detail">
+          <strong>1,020,593 rows</strong> of NIFTY 50 1-minute OHLCV<br>
+          Covering <strong>Jan 2015 — Jan 2026</strong> (11 years)<br>
+          Self-collected, cleaned, and validated
+        </div>
+        <span class="source-tag">SOURCE: BREEZE API (ICICI Direct)</span>
+      </div>
+
+      <div class="data-card">
+        <div class="data-icon">&#x1F4C8;</div>
+        <h4>Options Chain Data</h4>
+        <div class="data-detail">
+          <strong>25+ expiry dates</strong> with full strike chain<br>
+          Weekly, monthly, and LEAPS (out to 2028)<br>
+          NIFTY options with bid/ask/OI/IV
+        </div>
+        <span class="source-tag">SOURCE: BREEZE API &middot; ZERODHA KITE</span>
+      </div>
+
+      <div class="data-card">
+        <div class="data-icon">&#x1F3E6;</div>
+        <h4>Multi-Index Coverage</h4>
+        <div class="data-detail">
+          <strong>6 indices:</strong> NIFTY, BANKNIFTY, FINNIFTY, MIDCPNIFTY, SENSEX, BANKEX<br>
+          Daily + intraday frequency
+        </div>
+        <span class="source-tag">SOURCE: BREEZE API &middot; NSE</span>
+      </div>
+
+      <div class="data-card">
+        <div class="data-icon">&#x1F6E2;&#xFE0F;</div>
+        <h4>Commodities Data</h4>
+        <div class="data-detail">
+          <strong>6 commodities:</strong> Gold, Silver, Crude Oil (US+UK), Copper, Platinum<br>
+          Used for cross-asset correlation and macro signals
+        </div>
+        <span class="source-tag">SOURCE: BREEZE API</span>
+      </div>
+
+      <div class="data-card">
+        <div class="data-icon">&#x1F4C1;</div>
+        <h4>Historical Equity Universe</h4>
+        <div class="data-detail">
+          <strong>6,404 historical files</strong> in raw data archive<br>
+          <strong>4,000+ stock parquet files</strong> (5 years, daily)<br>
+          Covering all major NSE-listed equities
+        </div>
+        <span class="source-tag">SOURCE: BREEZE API &middot; yfinance &middot; NSE</span>
+      </div>
+
+      <div class="data-card">
+        <div class="data-icon">&#x1F4BE;</div>
+        <h4>Total Data Volume</h4>
+        <div class="data-detail">
+          Main Dataset: <strong>710 MB</strong><br>
+          Extended Dataset: <strong>21 GB</strong><br>
+          Index Data: <strong>412 MB</strong><br>
+          <strong style="color: var(--accent-amber);">22+ GB total self-maintained data</strong>
+        </div>
+        <span class="source-tag">AUTOMATED DAILY UPDATES</span>
+      </div>
+    </div>
+
+    <div class="honest-note" style="margin-top: 20px;">
+      <strong>On data quality — I know where I'm weak:</strong> As a BBA Finance student who learned coding on my own, I've built all data pipelines by doing.
+      I know there are edge cases I've likely missed — <strong>continuous futures data rollover handling, survivorship bias in stock universe selection,
+      look-ahead bias in feature engineering</strong>. I can identify these problems exist, but I don't always know the right way to solve them.
+      That's exactly the kind of thing a proper quant team with experienced engineers catches through code review and institutional knowledge.
+    </div>
+  </div>
+
+  <!-- ============================================================= -->
+  <!-- SECTION 3: CODE ARCHITECTURE -->
+  <!-- ============================================================= -->
+  <div class="section" data-animate>
+    <div class="section-header">
+      <span class="section-number">04</span>
+      <span class="section-title">Code Architecture — Hedge Fund Algo</span>
+      <span class="section-tag">Source Tree</span>
+    </div>
+
+    <div class="terminal">
+      <div class="terminal-header">
+        <div class="terminal-dot red"></div>
+        <div class="terminal-dot yellow"></div>
+        <div class="terminal-dot green"></div>
+        <span class="terminal-title">hedge_fund_algo/src/ &mdash; 31 Python modules</span>
+      </div>
+      <div class="terminal-body">
+<span class="folder">src/</span>
+&#x251C;&#x2500;&#x2500; <span class="file">data_loader.py</span>              <span class="comment"># Multi-source data ingestion (parquet, CSV, API)</span>
+&#x251C;&#x2500;&#x2500; <span class="file">data_loader_macro.py</span>         <span class="comment"># Macro factor pipeline (VIX, yields, FII flows)</span>
+&#x251C;&#x2500;&#x2500; <span class="file">features.py</span>                  <span class="comment"># 50+ features: momentum, vol, mean-revert, macro</span>
+&#x251C;&#x2500;&#x2500; <span class="file">feature_selection.py</span>         <span class="comment"># Statistical feature selection (mutual info, LASSO)</span>
+&#x251C;&#x2500;&#x2500; <span class="file">regime_detection.py</span>          <span class="comment"># HMM + vol clustering market regime classifier</span>
+&#x251C;&#x2500;&#x2500; <span class="file">models.py</span>                    <span class="comment"># XGBoost, RF, LightGBM model definitions</span>
+&#x251C;&#x2500;&#x2500; <span class="file">meta_model.py</span>                <span class="comment"># Ensemble meta-learner (stacking)</span>
+&#x251C;&#x2500;&#x2500; <span class="file">optuna_tuner.py</span>              <span class="comment"># Bayesian hyperparameter optimization</span>
+&#x251C;&#x2500;&#x2500; <span class="file">risk_metrics.py</span>              <span class="comment"># Sharpe, Sortino, VaR, CVaR, max drawdown</span>
+&#x251C;&#x2500;&#x2500; <span class="file">report_builder.py</span>            <span class="comment"># Automated HTML/PDF report generation</span>
+&#x251C;&#x2500;&#x2500; <span class="file">main_pipeline.py</span>             <span class="comment"># End-to-end orchestrator</span>
+&#x2502;
+&#x251C;&#x2500;&#x2500; <span class="folder">stage4/</span>                      <span class="comment"># Deep optimization &amp; validation</span>
+&#x2502;   &#x251C;&#x2500;&#x2500; <span class="file">deep_feature_fusion_fixed.py</span>  <span class="comment"># Cross-feature interaction layer</span>
+&#x2502;   &#x251C;&#x2500;&#x2500; <span class="file">regime_features.py</span>           <span class="comment"># Regime-conditional feature transforms</span>
+&#x2502;   &#x251C;&#x2500;&#x2500; <span class="file">position_sizer.py</span>            <span class="comment"># Kelly criterion + vol-targeting</span>
+&#x2502;   &#x2514;&#x2500;&#x2500; <span class="file">walkforward_backtester.py</span>    <span class="comment"># Anchored walk-forward validation</span>
+&#x2502;
+&#x251C;&#x2500;&#x2500; <span class="folder">stage5/</span>
+&#x2502;   &#x2514;&#x2500;&#x2500; <span class="file">portfolio_constructor.py</span>     <span class="comment"># Equal-weight &amp; risk-parity allocation</span>
+&#x2502;
+&#x251C;&#x2500;&#x2500; <span class="folder">stage6/</span>
+&#x2502;   &#x2514;&#x2500;&#x2500; <span class="file">alpha_attribution.py</span>        <span class="comment"># Decompose returns by factor exposure</span>
+&#x2502;
+&#x2514;&#x2500;&#x2500; <span class="folder">stage7_execution_simulation/</span>
+    &#x251C;&#x2500;&#x2500; <span class="file">execution_models.py</span>         <span class="comment"># Slippage, market impact, fill models</span>
+    &#x2514;&#x2500;&#x2500; <span class="file">stage7_order_generator.py</span>   <span class="comment"># Generate executable order flow</span>
+      </div>
+    </div>
+
+    <h3 style="font-size: 16px; font-weight: 600; margin: 28px 0 16px; color: var(--text-primary);">Test Validation &mdash; 653 Unit Tests, All Passing</h3>
+    <div class="validation-grid">
+      <div class="validation-item">
+        <div class="vi-name">Pairs Trading</div>
+        <div class="vi-tests">32/32</div>
+        <div class="vi-coverage">Coverage: 74.5%</div>
+        <div class="vi-status">&#x2714; VALIDATED</div>
+      </div>
+      <div class="validation-item">
+        <div class="vi-name">Diffusion Momentum</div>
+        <div class="vi-tests">31/31</div>
+        <div class="vi-coverage">Coverage: 86.2%</div>
+        <div class="vi-status">&#x2714; VALIDATED</div>
+      </div>
+      <div class="validation-item">
+        <div class="vi-name">Network Rotation</div>
+        <div class="vi-tests">24/24</div>
+        <div class="vi-coverage">Coverage: 93.0%</div>
+        <div class="vi-status">&#x2714; VALIDATED</div>
+      </div>
+      <div class="validation-item">
+        <div class="vi-name">Ensemble Strategy</div>
+        <div class="vi-tests">33/33</div>
+        <div class="vi-coverage">All components</div>
+        <div class="vi-status">&#x2714; VALIDATED</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================= -->
+  <!-- SECTION 4: WHO I AM -->
+  <!-- ============================================================= -->
+  <div class="section" data-animate>
+    <div class="section-header">
+      <span class="section-number">05</span>
+      <span class="section-title">How I Think &amp; Work</span>
+      <span class="section-tag">Mindset</span>
+    </div>
+
+    <div class="trait-grid">
+      <div class="trait-card">
+        <h4>I Get What I Need at Minimum Cost</h4>
+        <p>
+          I don't have Bloomberg or Reuters. I have the Breeze API, yfinance, and NSE bulk downloads. I figured out how to get 11 years of 1-minute data, options chains across all strikes and expiries, and 6,400+ equity files — for essentially free. I find a way to source what I need without burning money. The 22+ GB of data I maintain didn't cost me anything except time and ingenuity.
+        </p>
+      </div>
+
+      <div class="trait-card">
+        <h4>I Find Patterns Others Don't Look For</h4>
+        <p>
+          Most people backtest generic strategies on generic data. I look at individual stocks and find their "personality." Some stocks consistently revert to a specific moving average — it's not random, it's institutional behavior.
+        </p>
+        <div class="trait-example">
+          Example: Mahindra &amp; Mahindra bounces off 50 EMA / 20 EMA on the weekly chart with high reliability. I've found similar mean-cycle patterns across multiple stocks and actively trade them.
+        </div>
+      </div>
+
+      <div class="trait-card">
+        <h4>I Think in Systems, Not Signals</h4>
+        <p>
+          I didn't just write a strategy — I built the full stack: data ingestion, feature engineering, regime detection, model training, portfolio construction, alpha attribution, and execution simulation. 7 stages, 31 files, one cohesive pipeline. I understand how each piece connects and where it can break.
+        </p>
+      </div>
+
+      <div class="trait-card" style="text-align: center;">
+        <h4>Speed of Execution</h4>
+        <p style="margin-bottom: 12px;">
+          I type at <strong style="color: var(--accent-green); font-family: 'JetBrains Mono', monospace; font-size: 20px;">170 WPM</strong>
+        </p>
+        <p>
+          When I have an idea, I can prototype it fast. Typing speed sounds trivial, but combined with AI tools, it means I can go from hypothesis to backtest in hours, not days. Speed compounds &mdash; more iterations, more experiments, faster convergence on what works.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================= -->
+  <!-- SECTION 5: WHY I NEED TO JOIN A TEAM -->
+  <!-- ============================================================= -->
+  <div class="section" data-animate>
+    <div class="section-header">
+      <span class="section-number">06</span>
+      <span class="section-title">Why I Need to Join a Team</span>
+      <span class="section-tag">The Honest Case</span>
+    </div>
+
+    <div class="why-grid">
+      <div class="why-panel need">
+        <h3 style="color: var(--accent-amber);">What I Lack &mdash; And I Know It</h3>
+
+        <div class="why-item">
+          <span class="why-icon">&#x26A1;</span>
+          <div class="why-text">
+            <strong>Execution Infrastructure.</strong>
+            I can validate that an edge exists in backtests. But execution beats me every time. Co-location, low-latency order routing, smart order routing across exchanges — I've never had access to production-grade execution. The gap between a good backtest and a profitable live strategy is execution, and I haven't crossed that gap.
+          </div>
+        </div>
+
+        <div class="why-item">
+          <span class="why-icon">&#x1F41B;</span>
+          <div class="why-text">
+            <strong>I'm a Finance Student, Not a Software Engineer.</strong>
+            I taught myself Python and built all of this. But I'm a BBA Finance student — I don't have CS fundamentals. I know there are bugs I can't see:
+            <strong>continuous futures data rollover, survivorship bias, look-ahead bias in feature engineering, edge cases in order matching.</strong>
+            I can identify that these problems exist, but I often don't know the correct way to solve them. I need engineers who've built production systems to review my code and catch what I can't.
+          </div>
+        </div>
+
+        <div class="why-item">
+          <span class="why-icon">&#x1F9E0;</span>
+          <div class="why-text">
+            <strong>Like-Minded People.</strong>
+            I've built everything alone. No one around me talks about Sharpe ratios, transfer entropy, or regime detection. I want to be in a room where someone says "your walk-forward window is too short" and I can learn from that. I want to be challenged, not just validated. Growth requires feedback, and feedback requires peers.
+          </div>
+        </div>
+
+        <div class="why-item">
+          <span class="why-icon">&#x1F504;</span>
+          <div class="why-text">
+            <strong>Solo Development Has a Ceiling.</strong>
+            I've hit it. I can build a backtest. I can run a paper trading bot. But I can't do code review on my own work. I can't catch my own blind spots. When something breaks, there's only me — and sometimes I don't know what I don't know. I need to be part of a team where my weaknesses are someone else's strengths.
+          </div>
+        </div>
+      </div>
+
+      <div class="why-panel bring">
+        <h3 style="color: var(--accent-green);">What I Walk In With &mdash; Day One</h3>
+
+        <div class="why-item">
+          <span class="why-icon">&#x1F4CA;</span>
+          <div class="why-text">
+            <strong>A research mind that's already producing results.</strong>
+            I'm not coming in blank. I've already built, tested, and validated 14+ strategies using real math — cointegration, SDEs, transfer entropy, ensemble methods. The research pipeline exists and can be pointed at any new universe or asset class on day one.
+          </div>
+        </div>
+
+        <div class="why-item">
+          <span class="why-icon">&#x1F50C;</span>
+          <div class="why-text">
+            <strong>Ready-to-plug data infrastructure.</strong>
+            22+ GB of self-sourced Indian market data. 11 years of 1-minute data. Options chains. 6 indices. 6 commodities. 6,400+ equity files. Automated daily updater scripts. I know where every data point came from because I wrote the ingestion pipelines myself. This can complement and validate against existing datasets.
+          </div>
+        </div>
+
+        <div class="why-item">
+          <span class="why-icon">&#x2699;&#xFE0F;</span>
+          <div class="why-text">
+            <strong>118,000+ lines of working Python code.</strong>
+            362 modules. 653 passing tests. Options pricing engine. Live paper trading bot with Telegram alerts. ML prediction pipeline. This isn't theory — it compiles, it runs, it produces outputs.
+          </div>
+        </div>
+
+        <div class="why-item">
+          <span class="why-icon">&#x1F525;</span>
+          <div class="why-text">
+            <strong>Proof that I don't stop.</strong>
+            3 NISM certifications. 3 finance internships. Co-founded InsightKnox (200K+ accounts). VP of E-Cell. 9 weeks of documented Quant 2026 milestones. I built a BankNifty algo that did 500% in 3 months, watched it die when SEBI banned weekly options, lost my team — and started over from zero, alone. I'm still here building.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================= -->
+  <!-- SECTION 6: THE ELEPHANT IN THE ROOM -->
+  <!-- ============================================================= -->
+  <div class="section" data-animate>
+    <div class="section-header">
+      <span class="section-number">07</span>
+      <span class="section-title">The Elephant in the Room</span>
+      <span class="section-tag">Pre-Answered</span>
+    </div>
+
+    <div class="elephant-section">
+      <div class="elephant-q">"If your CAGR is 43.7%, why don't you just deploy your own capital?"</div>
+      <div class="elephant-context">&mdash; The question every quant fund founder asks. Here's my honest answer.</div>
+
+      <div class="elephant-answers">
+        <div class="elephant-answer">
+          <div class="ea-num">REASON 01</div>
+          <h4>Backtests &ne; Live Returns</h4>
+          <p>I'm intellectually honest enough to know that a 43.7% CAGR in backtest doesn't mean 43.7% live. Slippage, market impact, liquidity constraints, fill rates &mdash; I've modeled some of these, but I haven't <em>experienced</em> them with real capital at scale. I'd rather learn execution in a controlled environment with proper risk guardrails than blow up my savings learning the hard way.</p>
+        </div>
+
+        <div class="elephant-answer">
+          <div class="ea-num">REASON 02</div>
+          <h4>I've Seen What Happens Without Infra</h4>
+          <p>In 2024, my brother and I built a BankNifty options algo. It worked &mdash; &#x20B9;50K to &#x20B9;3L in 3 months. Then SEBI banned weekly BankNifty options and our algo died overnight. We had no infrastructure to adapt &mdash; no alternative instruments, no hedging framework, no team to pivot the strategy. I learned that an edge without infrastructure is fragile. I don't want to be fragile again.</p>
+        </div>
+
+        <div class="elephant-answer">
+          <div class="ea-num">REASON 03</div>
+          <h4>I Can Validate Edge, But Not Execute It</h4>
+          <p>My strength is research: finding patterns, testing hypotheses, building systems. Execution is a different skill &mdash; order routing, managing live positions under stress, handling exchange outages. I want to pair my research with a team that has solved execution at scale.</p>
+        </div>
+
+        <div class="elephant-answer">
+          <div class="ea-num">REASON 04</div>
+          <h4>I Lost My Team Once Before</h4>
+          <p>When our BankNifty algo died, the people I worked with left. I was from a non-tech background and at that time I didn't have the coding skills to continue solo &mdash; AI tools like Claude and GPT didn't exist the way they do now. I rebuilt everything from scratch, alone. It took me a year. I know first-hand that building solo has a ceiling. I'm not looking for capital &mdash; I'm looking for a team.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================= -->
+  <!-- SECTION 7: THE JOURNEY -->
+  <!-- ============================================================= -->
+  <div class="section" data-animate>
+    <div class="section-header">
+      <span class="section-number">08</span>
+      <span class="section-title">The Journey &mdash; How I Got Here</span>
+      <span class="section-tag">Timeline</span>
+    </div>
+
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="tl-date">2023</div>
+        <div class="tl-title">Started BBA Finance &amp; First Ventures</div>
+        <div class="tl-desc">Joined NMIMS Navi Mumbai for BBA Finance. Co-founded Kaamback (workforce platform, managed &#x20B9;50K budget, 40+ professionals). Launched E-Cell newsletter reaching 4,500+ student subscribers. Co-founded InsightKnox equity research platform &mdash; published 20+ reports reaching 200K+ accounts and 340K+ views.</div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="tl-date">2024</div>
+        <div class="tl-title">BankNifty Options Algo &mdash; First Real Edge</div>
+        <div class="tl-desc">Built a BankNifty weekly options trading algorithm with my brother. The algo exploited intraday momentum patterns on weekly expiry options. Deployed with real capital.</div>
+        <div class="tl-highlight">&#x20B9;50,000 &#x2192; &#x20B9;3,00,000 in 3 months (500% return)</div>
+        <div class="tl-loss">SEBI banned weekly BankNifty options &rarr; Algo died. Team disbanded. Back to zero.</div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="tl-date">MAY &ndash; JUL 2024</div>
+        <div class="tl-title">Internship: A.S. Commodities Pvt. Ltd.</div>
+        <div class="tl-desc"><strong>Financial Market Research Intern.</strong> Analysed options trading trends across 50+ contracts. Assisted in backtesting and development of derivatives trading strategies. Monitored economic events impacting commodity pricing, volatility, and trading volume. First real exposure to institutional-grade derivatives research.</div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="tl-date">MAY &ndash; JUL 2025</div>
+        <div class="tl-title">Internship: EqCap Group</div>
+        <div class="tl-desc"><strong>Financial Analyst Intern.</strong> Conducted equity research on 10+ listed companies using DCF, comparable company analysis, and financial ratio analysis. Interpreted balance sheets, income statements, and cash-flow statements. Tracked macro trends to assess risk exposure. Built real financial models used for investment decisions.</div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="tl-date">JUL &ndash; AUG 2025</div>
+        <div class="tl-title">Internship: Navneet Education Limited</div>
+        <div class="tl-desc"><strong>Investment Analyst.</strong> Built financial models evaluating &#x20B9;10+ Cr capital projects. Performed IRR, NPV, and payback period calculations for 5+ internal and subsidiary ventures. Benchmarked strategic returns from K-12 Techno Services, BeGalileo, and Tinkerly to support capital allocation decisions.</div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="tl-date">2025</div>
+        <div class="tl-title">Rebuilt Everything from Scratch &mdash; Solo</div>
+        <div class="tl-desc">After the BankNifty algo died and the team left, started learning Python properly using AI tools. Built the entire quant stack from zero: 7-stage hedge fund pipeline, 10-strategy options framework, live paper trading bot with Zerodha + Telegram, ML multibagger pipeline, data infrastructure using Breeze API. Cleared 3 NISM certifications (Equity Derivatives, Commodity Derivatives, Research Analyst). Became VP of E-Cell.</div>
+        <div class="tl-highlight">118,000+ lines of code &middot; 362 modules &middot; 653 tests &middot; 22+ GB data</div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="tl-date">2025</div>
+        <div class="tl-title">Mini Game Hub &mdash; Mental Reset</div>
+        <div class="tl-desc">Took a break from quant and built a mobile gaming app with 8 games in Flutter/Dart. Published on Google Play Store with AdMob monetization. Proved I can ship a consumer product end-to-end, not just research code.</div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="tl-date">JAN 2026 &ndash; PRESENT</div>
+        <div class="tl-title">Quant 2026 &mdash; Ongoing Research</div>
+        <div class="tl-desc">Active research and development: commodity swing strategies, volatility surface analysis, 15-year pairs trading backtest, live volatility paper trading, mean cycle testing across 20+ stocks, ML pattern strategy. 9 weekly milestones documented and completed.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== FOOTER ========== -->
+  <div class="footer">
+    <div class="footer-text">
+      KRISHNA SINGHAL &middot; <a href="mailto:krishna.singhal225@nmims.in">krishna.singhal225@nmims.in</a> &middot; NMIMS Navi Mumbai &middot; BBA Finance (2023&ndash;2026)
+    </div>
+    <div class="footer-text" style="margin-top: 8px; color: var(--text-muted);">
+      All code, data, and research referenced here is available for live demo and review upon request.<span class="cursor"></span>
+    </div>
+  </div>
+
+</div>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox(event)">
+  <span class="lb-close" onclick="closeLightbox(event)">&times;</span>
+  <img id="lb-img" src="" alt="">
+  <div class="lb-caption" id="lb-caption"></div>
+</div>
+
+<!-- ========== SCRIPTS ========== -->
+<script>
+  // Scroll animation
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+
+  document.querySelectorAll('[data-animate]').forEach(el => observer.observe(el));
+
+  // Lightbox
+  function openLightbox(el) {
+    const img = el.querySelector('img');
+    const label = el.querySelector('.gallery-label');
+    document.getElementById('lb-img').src = img.src;
+    document.getElementById('lb-caption').textContent = label ? label.textContent : '';
+    document.getElementById('lightbox').classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeLightbox(e) {
+    if (e.target === document.getElementById('lb-img')) return;
+    document.getElementById('lightbox').classList.remove('active');
+    document.body.style.overflow = '';
+  }
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      document.getElementById('lightbox').classList.remove('active');
+      document.body.style.overflow = '';
+    }
+  });
+</script>
+
+</body>
+</html>
