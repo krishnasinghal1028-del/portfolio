@@ -700,6 +700,154 @@
   ::-webkit-scrollbar-track { background: var(--bg-primary); }
   ::-webkit-scrollbar-thumb { background: var(--border-accent); border-radius: 3px; }
   ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+  /* ============================================================= */
+  /* EQUITY PROOF SECTION */
+  /* ============================================================= */
+  .equity-layout {
+    display: grid;
+    grid-template-columns: 1fr 310px;
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+  .equity-chart-box {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px 20px 14px;
+  }
+  .equity-chart-label {
+    font-size: 10px;
+    color: var(--text-muted);
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+  .equity-canvas-wrap {
+    position: relative;
+    height: 240px;
+  }
+  .equity-milestones {
+    display: flex;
+    gap: 10px;
+    margin-top: 14px;
+  }
+  .milestone-card {
+    flex: 1;
+    background: rgba(0,210,106,0.05);
+    border: 1px solid rgba(0,210,106,0.18);
+    border-radius: 6px;
+    padding: 11px 13px;
+    transition: border-color 0.2s;
+  }
+  .milestone-card:hover { border-color: rgba(0,210,106,0.45); }
+  .ms-date {
+    font-size: 9px;
+    color: var(--text-muted);
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .ms-event {
+    font-size: 11px;
+    color: var(--text-primary);
+    font-weight: 600;
+    margin-bottom: 5px;
+    line-height: 1.3;
+  }
+  .ms-stat {
+    font-size: 13px;
+    color: var(--accent-green);
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+  }
+  /* Metrics right column */
+  .equity-metrics-col {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .em-hero {
+    background: var(--bg-card);
+    border: 1px solid var(--border-accent);
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .em-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 50% 0%, rgba(0,210,106,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .em-hero-label {
+    font-size: 9px;
+    color: var(--text-muted);
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .em-hero-value {
+    font-size: 42px;
+    color: var(--accent-green);
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 8px;
+    text-shadow: 0 0 20px rgba(0,210,106,0.4);
+  }
+  .em-hero-sub {
+    font-size: 10px;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+  .em-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .em-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 12px;
+  }
+  .em-card-label {
+    font-size: 9px;
+    color: var(--text-muted);
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+  }
+  .em-card-value {
+    font-size: 15px;
+    color: var(--text-primary);
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+  }
+  .em-card-value.green { color: var(--accent-green); }
+  .em-card-value.amber { color: var(--accent-amber); }
+  .em-card-value.red { color: #ff4757; }
+  .equity-disclaimer {
+    font-size: 11px;
+    color: var(--text-muted);
+    background: rgba(255,170,0,0.04);
+    border: 1px solid rgba(255,170,0,0.15);
+    border-radius: 6px;
+    padding: 12px 16px;
+    line-height: 1.7;
+  }
+  @media (max-width: 920px) {
+    .equity-layout { grid-template-columns: 1fr; }
+    .equity-milestones { flex-direction: column; }
+  }
 </style>
 </head>
 <body>
@@ -1019,11 +1167,98 @@
   </div>
 
   <!-- ============================================================= -->
+  <!-- SECTION: PROOF OF EDGE -->
+  <!-- ============================================================= -->
+  <div class="section" data-animate id="proof-section">
+    <div class="section-header">
+      <span class="section-number">02</span>
+      <span class="section-title">Proof of Edge &mdash; BankNifty Algo Live Performance</span>
+      <span class="section-tag">Real Trades &middot; 2-Month Snapshot</span>
+    </div>
+
+    <div class="equity-layout">
+      <!-- LEFT: Chart + Key Moments -->
+      <div>
+        <div class="equity-chart-box">
+          <div class="equity-chart-label">Portfolio Value &mdash; Starting Capital ₹50,000</div>
+          <div class="equity-canvas-wrap">
+            <canvas id="equityChart"></canvas>
+          </div>
+        </div>
+        <div class="equity-milestones">
+          <div class="milestone-card">
+            <div class="ms-date">5 Jun 2024</div>
+            <div class="ms-event">Election Volatility Play</div>
+            <div class="ms-stat">+₹43,630 &middot; +122%</div>
+          </div>
+          <div class="milestone-card">
+            <div class="ms-date">12 Jun 2024</div>
+            <div class="ms-event">BankNifty CE Breakout</div>
+            <div class="ms-stat">+₹58,538 &middot; +156%</div>
+          </div>
+          <div class="milestone-card">
+            <div class="ms-date">24 Jul 2024</div>
+            <div class="ms-event">BankNifty PE Surge</div>
+            <div class="ms-stat">+₹40,742 &middot; +79%</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: Metrics -->
+      <div class="equity-metrics-col">
+        <div class="em-hero">
+          <div class="em-hero-label">Total Return</div>
+          <div class="em-hero-value" id="em-return">+0%</div>
+          <div class="em-hero-sub">₹50,000 &rarr; ₹2,71,379<br>across 63 trading days</div>
+        </div>
+        <div class="em-grid">
+          <div class="em-card">
+            <div class="em-card-label">Net Profit</div>
+            <div class="em-card-value green" id="em-pnl">₹0</div>
+          </div>
+          <div class="em-card">
+            <div class="em-card-label">Win Rate</div>
+            <div class="em-card-value amber" id="em-wr">0%</div>
+          </div>
+          <div class="em-card">
+            <div class="em-card-label">Risk : Reward</div>
+            <div class="em-card-value" id="em-rr">—</div>
+          </div>
+          <div class="em-card">
+            <div class="em-card-label">Total Trades</div>
+            <div class="em-card-value" id="em-trades">0</div>
+          </div>
+          <div class="em-card">
+            <div class="em-card-label">Avg Win</div>
+            <div class="em-card-value green" id="em-avgwin">₹0</div>
+          </div>
+          <div class="em-card">
+            <div class="em-card-label">Avg Loss</div>
+            <div class="em-card-value red" id="em-avgloss">₹0</div>
+          </div>
+          <div class="em-card">
+            <div class="em-card-label">Best Trade</div>
+            <div class="em-card-value green">+₹58,538</div>
+          </div>
+          <div class="em-card">
+            <div class="em-card-label">Worst Trade</div>
+            <div class="em-card-value red">-₹9,316</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="equity-disclaimer">
+      ⚠ &nbsp;<strong>Partial snapshot only</strong> — covers May–Jul 2024. System was migrated after this period to a new execution infrastructure. This is early-stage, sub-optimal performance; the algo continued running beyond this window with improved parameters, refined risk management, and higher capital deployment.
+    </div>
+  </div>
+
+  <!-- ============================================================= -->
   <!-- SECTION: RESEARCH GALLERY -->
   <!-- ============================================================= -->
   <div class="section" data-animate>
     <div class="section-header">
-      <span class="section-number">02</span>
+      <span class="section-number">03</span>
       <span class="section-title">Research Output &mdash; Actual Visualizations from My Code</span>
       <span class="section-tag">Click to Expand</span>
     </div>
@@ -1081,7 +1316,7 @@
   <!-- ============================================================= -->
   <div class="section" data-animate>
     <div class="section-header">
-      <span class="section-number">03</span>
+      <span class="section-number">04</span>
       <span class="section-title">Data Infrastructure — Self-Sourced &amp; Maintained</span>
       <span class="section-tag">Data Pipeline</span>
     </div>
@@ -1166,7 +1401,7 @@
   <!-- ============================================================= -->
   <div class="section" data-animate>
     <div class="section-header">
-      <span class="section-number">04</span>
+      <span class="section-number">05</span>
       <span class="section-title">Code Architecture — Hedge Fund Algo</span>
       <span class="section-tag">Source Tree</span>
     </div>
@@ -1244,7 +1479,7 @@
   <!-- ============================================================= -->
   <div class="section" data-animate>
     <div class="section-header">
-      <span class="section-number">05</span>
+      <span class="section-number">06</span>
       <span class="section-title">How I Think &amp; Work</span>
       <span class="section-tag">Mindset</span>
     </div>
@@ -1291,7 +1526,7 @@
   <!-- ============================================================= -->
   <div class="section" data-animate>
     <div class="section-header">
-      <span class="section-number">06</span>
+      <span class="section-number">07</span>
       <span class="section-title">Why I Need to Join a Team</span>
       <span class="section-tag">The Honest Case</span>
     </div>
@@ -1378,7 +1613,7 @@
   <!-- ============================================================= -->
   <div class="section" data-animate>
     <div class="section-header">
-      <span class="section-number">07</span>
+      <span class="section-number">08</span>
       <span class="section-title">The Elephant in the Room</span>
       <span class="section-tag">Pre-Answered</span>
     </div>
@@ -1420,7 +1655,7 @@
   <!-- ============================================================= -->
   <div class="section" data-animate>
     <div class="section-header">
-      <span class="section-number">08</span>
+      <span class="section-number">09</span>
       <span class="section-title">The Journey &mdash; How I Got Here</span>
       <span class="section-tag">Timeline</span>
     </div>
@@ -1531,6 +1766,192 @@
       document.body.style.overflow = '';
     }
   });
+</script>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+(function() {
+  const labels = [
+    '29 May','30 May','31 May',
+    '3 Jun','4 Jun','5 Jun','6 Jun','7 Jun','10 Jun','11 Jun',
+    '12 Jun','13 Jun','14 Jun','18 Jun','19 Jun','20 Jun','21 Jun',
+    '24 Jun','25 Jun','26 Jun','27 Jun','28 Jun',
+    '1 Jul','2 Jul','3 Jul','5 Jul','8 Jul','9 Jul','10 Jul',
+    '11 Jul','12 Jul','15 Jul','16 Jul','18 Jul','19 Jul',
+    '23 Jul','24 Jul','25 Jul','26 Jul','29 Jul','30 Jul','31 Jul'
+  ];
+  const fullData = [
+    58717,55697,51957,
+    57048,51528,89571,75553,72053,66253,68453,
+    126991,132179,146080,155650,177573,174896,172676,
+    162398,169495,174129,192905,186553,
+    176190,202088,190809,197571,188078,188550,183289,
+    186373,186875,190845,191135,179974,183393,
+    188171,228913,231364,231562,239985,235239,271379
+  ];
+  const allPnls = [
+    8717,-3020.1,-3740,
+    -1040.67,6131.34,-5519.72,-5587.75,43630.94,-6443,-6200,
+    -1375,-3500,-5800,2200,58538,5188,13900.5,9570,
+    -9316.25,25715,-2870,5495,10900,-8000,-3726,1048.78,
+    -3150,568.8,361.16,-5529.6,-4748.9,6435,838.5,7318.35,
+    -4247.1,2326.5,-31.35,-5542.78,-5326.5,-3807.15,2822.25,
+    10511.7,-1583.4,-7497.6,18219.6,-3009,126,-5823,
+    18776.93,291.75,-5391,-675.75,-2545.81,
+    1998.7,-3137.4,-2791.8,-2846.7,-3586.8,-160.8,26059.61,
+    -1745.25,-5256,-4278.02,-4761,11522.5,-1676.4,-2371.95,
+    3370.5,-1635,-2505,-4674.96,2134.5,-1662,-2810.25,-2963.1,
+    363.6,148.77,352.8,750.6,1863.75,116.39,-1833.6,-2560.8,
+    2316,2580.37,1356.75,7235.25,-711.75,-3909.69,-2496,1608.6,
+    1176.99,-2722.8,-2417.4,-2977.5,-3042.79,872.4,2545.74,
+    -1698.75,-1193.85,-3452.25,2332.5,10108.35,-2484,1165.93,
+    1098.75,-224.25,36365.55,3502.52,-1351.8,4770,-967.08,
+    5792,3612.5,-4754.9,-672,-1125,-514.8,-202,-1938.14,
+    -248.4,6907.2,-510,2274.22,-3685.5,-193.05,-867.04,
+    -3405,11407.5,4222.5,1290,981,939,20703.96
+  ];
+
+  // Pre-compute metrics
+  const wins = allPnls.filter(p => p > 0);
+  const losses = allPnls.filter(p => p < 0);
+  const totalTrades = allPnls.length;
+  const winRate = (wins.length / totalTrades * 100);
+  const avgWin = wins.reduce((a, b) => a + b, 0) / wins.length;
+  const avgLoss = Math.abs(losses.reduce((a, b) => a + b, 0) / losses.length);
+  const rr = (avgWin / avgLoss).toFixed(2);
+
+  let chartInstance = null;
+  let triggered = false;
+
+  function countUp(elId, target, prefix, suffix, duration, decimals) {
+    const el = document.getElementById(elId);
+    if (!el) return;
+    const start = performance.now();
+    const step = (now) => {
+      const p = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - p, 3);
+      const val = eased * target;
+      el.textContent = prefix + (decimals > 0 ? val.toFixed(decimals) : Math.round(val).toLocaleString('en-IN')) + suffix;
+      if (p < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }
+
+  function animateMetrics() {
+    countUp('em-return', 442, '+', '%', 2200, 0);
+    countUp('em-pnl', 221379, '₹', '', 2200, 0);
+    countUp('em-wr', winRate, '', '%', 1600, 1);
+    countUp('em-trades', totalTrades, '', '', 1400, 0);
+    countUp('em-avgwin', Math.round(avgWin), '₹', '', 1600, 0);
+    countUp('em-avgloss', Math.round(avgLoss), '₹', '', 1600, 0);
+    const rrEl = document.getElementById('em-rr');
+    if (rrEl) {
+      setTimeout(() => { rrEl.textContent = '1 : ' + rr; }, 800);
+    }
+  }
+
+  function buildChart() {
+    const canvas = document.getElementById('equityChart');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+
+    const gradient = ctx.createLinearGradient(0, 0, 0, 260);
+    gradient.addColorStop(0, 'rgba(0,210,106,0.25)');
+    gradient.addColorStop(0.7, 'rgba(0,210,106,0.06)');
+    gradient.addColorStop(1, 'rgba(0,210,106,0)');
+
+    chartInstance = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: [],
+        datasets: [{
+          data: [],
+          borderColor: '#00d26a',
+          backgroundColor: gradient,
+          borderWidth: 2,
+          pointRadius: 0,
+          pointHoverRadius: 6,
+          pointHoverBackgroundColor: '#00d26a',
+          pointHoverBorderColor: '#fff',
+          pointHoverBorderWidth: 2,
+          fill: true,
+          tension: 0.35
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: { duration: 0 },
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: '#111827',
+            borderColor: '#2a3f5f',
+            borderWidth: 1,
+            padding: 10,
+            titleColor: '#8892a4',
+            bodyColor: '#e8ecf4',
+            titleFont: { family: 'JetBrains Mono', size: 10 },
+            bodyFont: { family: 'JetBrains Mono', size: 13, weight: '600' },
+            callbacks: {
+              label: (ctx) => ' ₹' + ctx.raw.toLocaleString('en-IN'),
+              title: (items) => items[0].label
+            }
+          }
+        },
+        scales: {
+          x: {
+            grid: { color: 'rgba(255,255,255,0.03)', drawBorder: false },
+            ticks: { color: '#5a6578', font: { size: 9, family: 'JetBrains Mono' }, maxRotation: 45, maxTicksLimit: 12 }
+          },
+          y: {
+            grid: { color: 'rgba(255,255,255,0.05)', drawBorder: false },
+            ticks: {
+              color: '#5a6578',
+              font: { size: 9, family: 'JetBrains Mono' },
+              callback: v => '₹' + (v >= 100000 ? (v/100000).toFixed(1) + 'L' : (v/1000).toFixed(0) + 'K')
+            }
+          }
+        }
+      }
+    });
+
+    // Draw line progressively left-to-right
+    let i = 0;
+    const msPerPoint = 65;
+    const metricsDelay = Math.round(fullData.length * msPerPoint * 0.6);
+    let metricsFired = false;
+
+    const timer = setInterval(() => {
+      chartInstance.data.labels.push(labels[i]);
+      chartInstance.data.datasets[0].data.push(fullData[i]);
+      chartInstance.update('none');
+      if (!metricsFired && i >= Math.floor(fullData.length * 0.6)) {
+        metricsFired = true;
+        animateMetrics();
+      }
+      i++;
+      if (i >= fullData.length) {
+        clearInterval(timer);
+        chartInstance.update();
+      }
+    }, msPerPoint);
+  }
+
+  // Trigger when section scrolls into view
+  const section = document.getElementById('proof-section');
+  if (section) {
+    const proofObserver = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting && !triggered) {
+        triggered = true;
+        buildChart();
+      }
+    }, { threshold: 0.15 });
+    proofObserver.observe(section);
+  }
+})();
 </script>
 
 </body>
